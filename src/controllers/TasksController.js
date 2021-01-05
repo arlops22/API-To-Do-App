@@ -5,10 +5,14 @@ module.exports = {
     async create(req, res) {
 
         const { taskName } = req.body;
+        const userId = req.userId;
 
         try {
     
-            const task = await Task.create({ taskName });
+            const task = await Task.create({ 
+                taskName,
+                userId
+            });
     
             return res.json(task);
         

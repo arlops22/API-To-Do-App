@@ -6,7 +6,9 @@ const User = require('../models/User');
 
 const connection = new Sequelize(dbConfig);
 
-Task.init(connection);
 User.init(connection);
+Task.init(connection);
+
+Task.associate(connection.models)
 
 module.exports = connection;
