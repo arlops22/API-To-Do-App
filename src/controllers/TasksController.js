@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const User = require('../models/User');
 
 module.exports = {
 
@@ -8,7 +9,13 @@ module.exports = {
         const userId = req.userId;
 
         try {
-    
+            
+            const user = await User.findByPk(userId);
+
+            if (!user) {
+                return res.status(401).json({error: "User not found"});
+            }
+
             const task = await Task.create({ 
                 taskName,
                 userId
@@ -22,10 +29,19 @@ module.exports = {
     },
 
     async index(req, res) {
-        try {
-            const tasks = await Task.findAll();
 
-            return res.status(200).json(tasks)
+        const userId = req.userId;
+
+        try {
+            const user = await User.findByPk(userId, {
+                include: { association: 'tasks' }
+            })
+
+            if (!user) {
+                return res.status(401).json({error: "User not found"});
+            }
+
+            return res.status(200).json(user.tasks)
 
         } catch(error) {
             return res.status(500).json(error)
@@ -36,10 +52,21 @@ module.exports = {
 
         const { taskId } = req.params;
         const { taskName } = req.body;
+        const userId = req.userId;
 
         try {
 
+            const user = await User.findByPk(userId);
+
+            if (!user) {
+                return res.status(401).json({error: "User not found"});
+            }
+
             const task = await Task.findByPk(taskId);
+
+            if (task.userId != userId) {
+                return res.status(404).json({error: "User is not the owner!"});
+            }
 
             if (!task) {
                 return res.status(404).json({error: "Task not found!"})
@@ -59,10 +86,21 @@ module.exports = {
     async delete(req, res) {
         
         const { taskId } = req.params;
+        const userId = req.userId;
 
         try {
 
+            const user = await User.findByPk(userId);
+
+            if (!user) {
+                return res.status(401).json({error: "User not found"});
+            }
+
             const task = await Task.findByPk(taskId);
+
+            if (task.userId != userId) {
+                return res.status(404).json({error: "User is not the owner!"});
+            }
 
             if (!task) {
                 return res.status(404).json({error: "Task not found!"})
@@ -81,13 +119,24 @@ module.exports = {
 
         const { taskId } = req.params;
         const { complete } = req.body;
+        const userId = req.userId;
 
         try {
 
+            const user = await User.findByPk(userId);
+
+            if (!user) {
+                return res.status(401).json({error: "User not found"});
+            }
+
             const task = await Task.findByPk(taskId);
 
+            if (task.userId != userId) {
+                return res.status(404).json({error: "User is not the owner!"});
+            }
+
             if (!task) {
-                return res.status(404).json({error: "Task not found!"})
+                return res.status(404).json({error: "Task not found!"});
             }
 
             task.complete = complete;

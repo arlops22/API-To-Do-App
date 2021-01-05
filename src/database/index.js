@@ -10,5 +10,6 @@ User.init(connection);
 Task.init(connection);
 
 Task.associate(connection.models)
+User.associate(connection.models)
 
 module.exports = connection;
