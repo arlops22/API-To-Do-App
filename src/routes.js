@@ -11,6 +11,8 @@ routes.post("/authenticate", UsersController.authenticate);
 
 routes.use(authMiddleware);
 
+routes.get("/profile", UsersController.profile);
+
 routes.get("/tasks", TasksController.index);
 routes.post("/tasks", TasksController.create);
 routes.post("/tasks/:taskId", TasksController.update);

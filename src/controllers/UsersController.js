@@ -71,6 +71,24 @@ module.exports = {
             return res.status(500).json(error);
         }
 
+    },
+
+    async profile(req, res) {
+
+        const userId = req.userId;
+
+        try {
+
+            const user = await User.findByPk(userId);
+
+            user.password = undefined;
+
+            return res.status(200).json({user})
+
+        } catch(error) {
+            return res.status(500).json(error);
+        }
+
     }
 
 }
